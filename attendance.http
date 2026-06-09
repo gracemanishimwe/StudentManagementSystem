@@ -1,0 +1,18 @@
+@baseUrl1 = http://localhost:5000
+
+### Get All Students
+GET {{baseUrl1}}/api/students
+
+### Add New Student
+POST {{baseUrl1}}/api/students
+Content-Type: application/json
+
+{
+  "name": "Grace Manishimwe",
+  "email": "grace@example.com",
+  "className": "S6",
+  "gender": "Female"
+}
+
+### Get All Attendance
+GET {{baseUrl1}}/api/attendance
