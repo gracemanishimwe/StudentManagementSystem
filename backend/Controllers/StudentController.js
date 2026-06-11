@@ -1,85 +1,60 @@
-const Student = require("../models/Student");
+import Student from "../models/Student.js";
 
-// GET all students
-const getStudents = async (req, res) => {
+// ✅ Generate ID (ST001, ST002...)
+const generateStudentId = async () => {
+  const lastStudent = await Student.findOne().sort({ createdAt: -1 });
+
+  let nextNumber = 1;
+
+  if (lastStudent && lastStudent.studentId) {
+    const lastNumber =
+      parseInt(lastStudent.studentId.replace("ST", "")) || 0;
+    nextNumber = lastNumber + 1;
+  }
+
+  return "ST" + String(nextNumber).padStart(3, "0");
+};
+
+// ✅ GET ALL STUDENTS
+export const getStudents = async (req, res) => {
   try {
-    const students = await Student.find().sort({ studentId: 1 });
+    const students = await Student.find().sort({ createdAt: 1 });
     res.json(students);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch students" });
   }
 };
 
-// GET single student
-const getStudentById = async (req, res) => {
-  try {
-    const student = await Student.findById(req.params.id);
-    if (!student) return res.status(404).json({ message: "Student not found" });
-    res.json(student);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// CREATE student with auto studentId (S001, S002...)
-const createStudent = async (req, res) => {
+// ✅ ADD STUDENT
+export const addStudent = async (req, res) => {
   try {
     const { name, email, className, gender } = req.body;
 
-    // Generate next studentId (S001, S002, ...)
-    const lastStudent = await Student.findOne().sort({ studentId: -1 });
-    let newId = "S001";
-
-    if (lastStudent && lastStudent.studentId) {
-      const lastNumber = parseInt(lastStudent.studentId.slice(1));
-      newId = `S${(lastNumber + 1).toString().padStart(3, '0')}`;
-    }
+    const studentId = await generateStudentId(); // 🔥 IMPORTANT
 
     const newStudent = new Student({
+      studentId,
       name,
-      studentId: newId,
-      email: email || "",
-      className: className || "",
-      gender: gender || "Male"
+      email,
+      className,
+      gender,
     });
 
-    const savedStudent = await newStudent.save();
-    res.status(201).json(savedStudent);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    await newStudent.save();
+
+    res.status(201).json(newStudent);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error adding student" });
   }
 };
 
-// UPDATE student
-const updateStudent = async (req, res) => {
+// ✅ DELETE STUDENT
+export const deleteStudent = async (req, res) => {
   try {
-    const updatedStudent = await Student.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!updatedStudent) return res.status(404).json({ message: "Student not found" });
-    res.json(updatedStudent);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    await Student.findByIdAndDelete(req.params.id);
+    res.json({ message: "Student deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting student" });
   }
-};
-
-// DELETE student
-const deleteStudent = async (req, res) => {
-  try {
-    const student = await Student.findByIdAndDelete(req.params.id);
-    if (!student) return res.status(404).json({ message: "Student not found" });
-    res.json({ message: "Student deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-module.exports = {
-  getStudents,
-  getStudentById,
-  createStudent,
-  updateStudent,
-  deleteStudent
 };

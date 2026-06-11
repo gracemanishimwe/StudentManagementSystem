@@ -19,25 +19,25 @@ function Login({ setIsLoggedIn, setUser }) {
         // Register
         const res = await API.post("/auth/register", { name, email, password });
         alert(res.data.message || "Registration successful! Please login now.");
-        setIsRegister(false); // Switch to login mode
+        setIsRegister(false);
         setName("");
         setPassword("");
       } else {
         // Login
         const res = await API.post("/auth/login", { email, password });
-        
+
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        
+
         setIsLoggedIn(true);
         if (setUser) setUser(res.data.user);
-        
+
         alert("Login Successful! Welcome " + res.data.user.name);
         navigate("/dashboard");
       }
     } catch (error) {
-      console.error(error); // This will help you see the real error in console
-      alert(error.response?.data?.message || "Something went wrong. Please check console.");
+      console.error(error);
+      alert(error.response?.data?.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -50,34 +50,45 @@ function Login({ setIsLoggedIn, setUser }) {
           {isRegister ? "Create Account" : "Welcome Back"}
         </h2>
 
-        <form onSubmit={handleSubmit}>
+        {/* ✅ FIXED FORM */}
+        <form onSubmit={handleSubmit} autoComplete="on">
+
+          {/* Name */}
           {isRegister && (
             <input
               type="text"
+              name="name"
               placeholder="Full Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-blue-500"
               required
+              autoComplete="name"
             />
           )}
 
+          {/* Email */}
           <input
             type="email"
+            name="email"
             placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-blue-500"
             required
+            autoComplete="email"
           />
 
+          {/* Password */}
           <input
             type="password"
+            name="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:border-blue-500"
             required
+            autoComplete={isRegister ? "new-password" : "current-password"}
           />
 
           <button
