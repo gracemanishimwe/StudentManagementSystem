@@ -1,12 +1,13 @@
-const express = require("express");
-const router = express.Router();
-const {
+import express from "express";
+import {
   getAttendance,
   createAttendance,
   getAttendanceById,
   updateAttendance,
   deleteAttendance
-} = require("../controllers/AttendanceController");
+} from "../controllers/AttendanceController.js";
+
+const router = express.Router();
 
 router.get("/", getAttendance);
 router.post("/", createAttendance);
@@ -14,4 +15,4 @@ router.get("/:id", getAttendanceById);
 router.put("/:id", updateAttendance);
 router.delete("/:id", deleteAttendance);
 
-module.exports = router;
+export default router;

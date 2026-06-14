@@ -1,14 +1,16 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   getStudents,
   addStudent,
+  updateStudent,
   deleteStudent,
-} from "../controllers/studentController.js";
+} = require("../controllers/StudentController");
 
 const router = express.Router();
 
-router.get("/students", getStudents);
-router.post("/students", addStudent);
-router.delete("/students/:id", deleteStudent);
+router.get("/", getStudents);
+router.post("/", addStudent);
+router.put("/:id", updateStudent);     // ← Update route
+router.delete("/:id", deleteStudent);
 
-export default router;
+module.exports = router;

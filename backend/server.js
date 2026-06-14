@@ -1,7 +1,7 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const dotenv = require('dotenv');
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -13,20 +13,22 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/auth', require('./routes/authRoutes'));           // New Auth Routes
-app.use('/students', require('./routes/studentRoutes'));
-app.use('/attendance', require('./routes/AttendanceRoutes'));
+import authRoutes from './routes/authRoutes.js';
+import studentRoutes from './routes/studentRoutes.js';
+import attendanceRoutes from './routes/AttendanceRoutes.js';
 
-// Test Route
+app.use('/auth', authRoutes);
+app.use('/students', studentRoutes);
+app.use('/attendance', attendanceRoutes);
+
 app.get('/', (req, res) => {
-  res.send('✅ Attendance System Backend is Running ');
+  res.send(' Attendance System Backend is Running');
 });
 
-// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ MongoDB is connected'))
+  .then(() => console.log(' MongoDB is connected'))
   .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(` Server running on port ${PORT}`);
 });
